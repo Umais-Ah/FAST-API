@@ -1,0 +1,35 @@
+# Personal notes
+notes/
+
+# Virtual environment
+fastapienv/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Testing cache
+.pytest_cache/
+.coverage
+htmlcov/
+
+# IDE settings
+.vscode/
+.idea/
+
+# Build files
+build/
+dist/
+*.egg-info/
+
+# Database files
+*.db
+*.sqlite3
+
+# Log files
+*.log
