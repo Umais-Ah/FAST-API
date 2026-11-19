@@ -1,8 +1,9 @@
 from datetime import UTC, datetime, timedelta
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi.templating import Jinja2Templates
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 from pydantic import BaseModel
@@ -47,7 +48,21 @@ def get_db():
 
 db_dependency = Annotated[Session, Depends(get_db)]
 
+templates = Jinja2Templates(directory="TodoApp/templates")
 
+
+### Pages ###
+@router.get("/login-page")
+def render_login_page(request: Request):
+    return templates.TemplateResponse(request=request, name="login.html")
+
+
+@router.get("/register-page")
+def render_register_page(request: Request):
+    return templates.TemplateResponse(request=request, name="register.html")
+
+
+### Endpoints
 def authenticate_user(username: str, password: str, db):
     user = db.query(User).filter(User.username == username).first()
     if not user:
@@ -67,6 +82,11 @@ def create_access_token(
 
 
 async def get_current_user(token: Annotated[str, Depends(oauth2_bearer)]):
+    if not token:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Could not validate user",
+        )
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=ALGORITHM)
         username: str = payload.get("sub")
